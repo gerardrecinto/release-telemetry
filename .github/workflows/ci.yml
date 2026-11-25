@@ -1,0 +1,35 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  ruby:
+    runs-on: ubuntu-latest
+    defaults: {run: {working-directory: ruby}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with: {ruby-version: "3.3", bundler-cache: true, working-directory: ruby}
+      - run: bundle exec rspec
+      - run: ruby bin/alert-audit
+  dotnet:
+    runs-on: ubuntu-latest
+    defaults: {run: {working-directory: dotnet}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: {dotnet-version: "8.0.x"}
+      - run: dotnet test DeployMarker.Tests
+      - run: dotnet run --project DeployMarker -- --entity-guid GUID --version 1.4.2 --commit abc123 --dry-run
+  terraform:
+    runs-on: ubuntu-latest
+    defaults: {run: {working-directory: terraform}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform fmt -check
+      - run: terraform init -backend=false
+      - run: terraform validate

@@ -1,0 +1,19 @@
+# Source of truth for alert conditions. Terraform builds them; ruby/bin/alert-audit checks them first.
+policy: release-health
+conditions:
+  - name: orders-api error rate above 5 percent
+    nrql: "SELECT percentage(count(*), WHERE error IS true) FROM Transaction WHERE appName = 'orders-api'"
+    threshold: 5
+    duration_minutes: 5
+    runbook_url: https://github.com/gerardrecinto/release-telemetry/blob/main/docs/RUNBOOK.md#error-rate
+  - name: orders-api p95 latency above 800 ms
+    nrql: "SELECT percentile(duration, 95) * 1000 FROM Transaction WHERE appName = 'orders-api'"
+    threshold: 800
+    duration_minutes: 10
+    runbook_url: https://github.com/gerardrecinto/release-telemetry/blob/main/docs/RUNBOOK.md#latency
+  - name: deployments stopped for 7 days
+    nrql: "SELECT count(*) FROM Deployment WHERE appName = 'orders-api' SINCE 7 days ago"
+    threshold: 0
+    operator: BELOW_OR_EQUALS
+    duration_minutes: 60
+    runbook_url: https://github.com/gerardrecinto/release-telemetry/blob/main/docs/RUNBOOK.md#no-deploys
