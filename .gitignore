@@ -1,5 +1,5 @@
-bin/
-obj/
+dotnet/**/bin/
+dotnet/**/obj/
 .terraform/
 *.tfstate*
 .bundle/
