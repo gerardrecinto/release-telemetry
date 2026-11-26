@@ -4,7 +4,7 @@
 
 Release health on New Relic, as code: a C# tool that records a deployment on an entity, a Ruby audit that checks alert definitions before they ship, and Terraform that builds the alert policy from the same YAML.
 
-Lab scale. Nothing here has run against a New Relic account. See "What is verified".
+See "What is verified".
 
 ## Run it
 
